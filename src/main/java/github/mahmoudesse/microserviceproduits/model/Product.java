@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@Entity
+@Table(name = "products")
 @Data
 @Setter
 @Getter
@@ -11,8 +13,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @ToString
-@Entity
-@Table(name = "products")
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
