@@ -1,0 +1,64 @@
+package github.mahmoudesse.microserviceproduits.web.controller;
+
+import github.mahmoudesse.microserviceproduits.dao.ProductDao;
+import github.mahmoudesse.microserviceproduits.model.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/products")
+public class ProductController implements HealthIndicator {
+
+  private static final Logger log = LoggerFactory.getLogger(ProductController.class);
+
+  @Autowired
+  private ProductDao productDao;
+
+  @GetMapping("/getAll")
+  public List<Product> getProducts() {
+    log.info("Actuator: ProductController.getProducts()");
+    return productDao.findAll();
+  }
+
+  @GetMapping("/getById/{id}")
+  public Product getProduct(@PathVariable int id) {
+    log.info("Actuator: ProductController.getProduct()");
+    return productDao.findById(id).orElse(null);
+  }
+
+  @PostMapping("/create")
+  public Product createProduct(@RequestBody Product product) {
+    log.info("Actuator: ProductController.createProduct()");
+    return productDao.save(product);
+  }
+
+  @PutMapping("/update")
+  public Product updateProduct(@RequestBody Product product) {
+    log.info("Actuator: ProductController.updateProduct()");
+    return productDao.save(product);
+  }
+
+  @DeleteMapping("/delete/{id}")
+  public void deleteProduct(@PathVariable int id) {
+    log.info("Actuator: ProductController.deleteProduct()");
+    productDao.deleteById(id);
+  }
+
+  @Override
+  public org.springframework.boot.actuate.health.Health health() {
+    log.info("Actuator: ProductController.health()");
+
+    List<Product> products = productDao.findAll();
+    if (products.isEmpty()) {
+      return Health.down().withDetail("count", 0).build();
+    }
+
+    return Health.up().withDetail("count", products.size()).build();
+  }
+}
